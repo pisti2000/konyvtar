@@ -10,40 +10,36 @@ const db = mysql.createConnection({
     host: 'localhost',
     port: 3307,
     user: 'root',
-    password: '', 
+    password: '',
     database: 'konyvtarak'
 });
 
 app.get('/', (req, res) => {
     const sql = "SELECT * FROM konyvek";
     db.query(sql, (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+        if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
 });
 
 app.delete('/konyvek/:id', (req, res) => {
-    const sql = "DELETE FROM konyvek WHERE id = 1";
+    const id = req.params.id;
+    const sql = "DELETE FROM konyvek WHERE id = ?";
     db.query(sql, [id], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        res.json({ message: 'Sikeres a törlés:ó!' });
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Sikeres törlés!' });
     });
 });
 
 app.post('/konyv/ins', (req, res) => {
-    const sql = "INSERT INTO konyvek (konyv_id, szerzo,cim, mufaj ) VALUES (?,?, ?, ?)";
-    const { name, location, established } = req.body;
-    db.query(sql, [name, location, established], (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
+    const { konyv_id, szerzo, cim, mufaj } = req.body;
+    const sql = "INSERT INTO konyvek (konyv_id, szerzo, cim, mufaj) VALUES (?, ?, ?, ?)";
+    db.query(sql, [konyv_id, szerzo, cim, mufaj], (err, results) => {
+        if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Sikeres hozzáadás!' });
     });
 });
+
 app.listen(3001, () => {
     console.log('Szerver fut a 3001-es porton');
-}  );
+});
